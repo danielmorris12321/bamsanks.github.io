@@ -1,6 +1,10 @@
 <html>
 <head>
   <title></title>
+  <script src="utils.js"></script>
+  <script src="vector.js"></script>
+  <script src="complex.js"></script>
+  <script src="graphicsDefs.js"></script>
   <script src="mvis.js"></script>
   <style>
     #main {
@@ -14,7 +18,10 @@
   </style>
 </head>
 <body>
-  <button style="position: absolute; left:0; top:0;" onclick="iterate()";>Iterate</button>
+  <div id="controls" style="position: absolute; left:0; top:0;">
+    <input id="accuracy" type="number"></input>
+    <button onclick="play();";>Play</button>
+  </div>
   <canvas id="main">
   </canvas>
 
