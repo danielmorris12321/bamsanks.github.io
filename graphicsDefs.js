@@ -33,7 +33,7 @@ for (var i in Object.keys(graphicsDefs)) {
       new Vector2d(),
       new Vector2d(obj[j]),
       new Vector2d(obj[j+1]),
-      new Vector2d(obj[j+2])).move(lastEndPoint);
+      new Vector2d(obj[j+2])).multiply(0.8).move(lastEndPoint);
     lastEndPoint = bezier.v4;
     beziers.push(bezier);
   }

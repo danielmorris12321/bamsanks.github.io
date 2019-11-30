@@ -13,6 +13,10 @@ class Vector2d {
     this.x += v.x; this.y += v.y;
     return this;
   }
+  multiply(scalar) {
+    this.x *= scalar; this.y *= scalar;
+    return this;
+  }
   static add(v1, v2) {
     return new Vector2d(v1.x + v2.x, v1.y + v2.y);
   }
@@ -57,6 +61,14 @@ class Bezier {
     this.v2 = this.v2.add(by);
     this.v3 = this.v3.add(by);
     this.v4 = this.v4.add(by);
+    return this;
+  }
+
+  multiply(by) {
+    this.v1 = this.v1.multiply(by);
+    this.v2 = this.v2.multiply(by);
+    this.v3 = this.v3.multiply(by);
+    this.v4 = this.v4.multiply(by);
     return this;
   }
 
