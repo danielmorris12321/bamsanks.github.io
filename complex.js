@@ -52,3 +52,43 @@ class Complex {
     return new Vector2d(this.re, this.im);
   }
 }
+
+
+
+
+// DISCRETE FOURIER TRANSFORM
+function dft(x) {
+  var N = x.length;
+  var coeff = [];
+  var expFac, part;
+  for (var i = 0; i < N; i++) {
+    coeff[i] = new Complex();
+    k = i - (N-1)/2;
+    for (var n = 0; n < N; n++) {
+      expFac = new Complex(Math.cos(2*Math.PI/N*k*n), -Math.sin(2*Math.PI/N*k*n));
+      part = Complex.multiply(x[n], expFac);
+      coeff[i] = Complex.add(coeff[i], part);
+    }
+  }
+  return coeff;
+}
+
+// Inverse DFT
+function approx(coeff, n, accuracy) {
+  var N = coeff.length;
+  accuracy = ifUndefined(accuracy, (N-1)/2);
+  var total = new Complex();
+  var part;
+  for (var k = 0; k < accuracy; k++) {
+    i = k + (N-1)/2;
+    part = new Complex(Math.cos(2*Math.PI*n*k/N), Math.sin(2*Math.PI*n*k/N));
+    total = Complex.add(total, Complex.multiply(coeff[i], part));
+
+    if (k > 0) {
+      i = (N-1)/2 - k;
+      part = new Complex(Math.cos(2*Math.PI*n*k/N), -Math.sin(2*Math.PI*n*k/N));
+      total = Complex.add(total, Complex.multiply(coeff[i], part));
+    }
+  }
+  return Complex.divide(total, N);
+}

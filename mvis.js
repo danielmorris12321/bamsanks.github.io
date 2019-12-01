@@ -61,117 +61,54 @@ function drawBezier(bezier, step, ctx, overheads) {
   if (overheads) ctx.stroke();
 }
 
-function DrawGraphic(bezierData, center) {
+function DrawGraphic(bezierData) {
   var v = bezierData.beziers; // To avoid repeating
-  var v1, v2, v3;
-  var lastEndPoint = center;
-  getContext().moveTo(center.x, center.y);
+  var ctx = getContext();
+  ctx.beginPath();
+  ctx.moveTo(v[0].v1.x, v[0].v1.y);
   for (var i = 0; i < v.length; i++) {
-    //v1 = Vector2d.add(lastEndPoint, v[i]);
-    //v2 = Vector2d.add(lastEndPoint, v[i+1]);
-    //v3 = Vector2d.add(lastEndPoint, v[i+2]);
     drawBezier(v[i]);
-    lastEndPoint = v3;
   }
   getContext().stroke();
 }
 
-function resizeCanvas(ctx, width, height) {
-  ctx = getContext(ctx);
-  if (!isDefined(ctx)) return;
-  ctx.canvas.width  = ifUndefined(width, window.innerWidth);
-  ctx.canvas.height = ifUndefined(height, window.innerHeight);
-}
-
-window.onload = function() {
-  globals.context = document.getElementById("main").getContext("2d");
-  resizeCanvas();
-  var center = new Vector2d(250, 30);
-  globals.context.strokeStyle = "#888";
-  DrawGraphic(graphicsDefs.eighthNote, center);
-  globals.context.strokeStyle = "#000";
-}
-
-window.onresize = function() {
-  resizeCanvas();
-}
 
 
-// DISCRETE FOURIER TRANSFORM
 
-function dft(x) {
-  var N = x.length;
-  var coeff = [];
-  var expFac, part;
-  for (var i = 0; i < N; i++) {
-    coeff[i] = new Complex();
-    k = i - (N-1)/2;
-    for (var n = 0; n < N; n++) {
-      expFac = new Complex(Math.cos(2*Math.PI/N*k*n), -Math.sin(2*Math.PI/N*k*n));
-      part = Complex.multiply(x[n], expFac);
-      coeff[i] = Complex.add(coeff[i], part);
-    }
+
+
+// MESS BEGINS...
+
+function createCoeffs(data, numSamples) {
+  var ac = [];
+  for (var i = 0; i < numSamples; i++) {
+    ac.push(data.SamplePoint(i / (numSamples-1)).toComplex());
   }
-  return coeff;
+  return dft(ac);
 }
-
-function approx(coeff, n, accuracy) {
-  var N = coeff.length;
-  accuracy = ifUndefined(accuracy, (N-1)/2);
-  var total = new Complex();
-  var part;
-  for (var k = 0; k < accuracy; k++) {
-    i = k + (N-1)/2;
-    part = new Complex(Math.cos(2*Math.PI*n*k/N), Math.sin(2*Math.PI*n*k/N));
-    total = Complex.add(total, Complex.multiply(coeff[i], part));
-
-    if (k > 0) {
-      i = (N-1)/2 - k;
-      part = new Complex(Math.cos(2*Math.PI*n*k/N), -Math.sin(2*Math.PI*n*k/N));
-      total = Complex.add(total, Complex.multiply(coeff[i], part));
-    }
-  }
-  return Complex.divide(total, N);
-}
-
-
-var center = new Vector2d(250, 30);
-
-numSamples = 101;
-ac = [];
-for (var i = 0; i < numSamples; i++) {
-  ac.push(graphicsDefs.eighthNote.SamplePoint(i / (numSamples-1)).toComplex());
-}
-
-coeff = dft(ac);
-
-globals.tick = 0;
-globals.step = 0.5;
+globals.numSamples = 15;
+globals.coeff = createCoeffs(graphicsDefs.eighthNote, globals.numSamples);
 
 function iterate() {
-  var v1 = approx(coeff, globals.tick, globals.accuracy);
-  var v2 = approx(coeff, globals.tick+globals.step, globals.accuracy);
-  //var v1 = SamplePoint(graphicsDefs.eighthNote, globals.tick).add(center);
-  //var v2 = SamplePoint(graphicsDefs.eighthNote, globals.tick+globals.step).add(center);
+  var v1 = approx(globals.coeff, globals.tick, globals.accuracy);
+  var v2 = approx(globals.coeff, globals.tick+globals.step, globals.accuracy);
   globals.tick += globals.step;
   drawLine(v1, v2);
 }
 
-function play() {
-  globals.accuracy = parseInt(document.getElementById("accuracy").value);
-
-  getContext().clearRect(0, 0, 2000, 2000);
-
-  var center = new Vector2d(250, 30);
-  globals.context.strokeStyle = "#888";
-  DrawGraphic(graphicsDefs.eighthNote, center);
+function drawOutline() {
+  globals.context.strokeStyle = "#aaa";
+  DrawGraphic(graphicsDefs.eighthNote);
   globals.context.strokeStyle = "#000";
+}
 
-  loop();
+function clearCanvas() {
+  var ctx = getContext();
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
 function loop(max, i) {
-  max = ifUndefined(numSamples*2);
+  max = ifUndefined(max, globals.numSamples/globals.step);
   i = ifUndefined(i, 0);
   if (i >= max) return;
   iterate();

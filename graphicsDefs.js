@@ -25,7 +25,7 @@ graphicsDefs = {
 var key;
 for (var i in Object.keys(graphicsDefs)) {
   key = Object.keys(graphicsDefs)[i]
-  lastEndPoint = new Vector2d(250, 30);
+  lastEndPoint = new Vector2d(250, 60);
   beziers = [];
   obj = graphicsDefs[key];
   for (var j = 0; j < obj.length; j += 3) {
