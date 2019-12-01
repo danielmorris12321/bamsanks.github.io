@@ -12,10 +12,26 @@ var credentials = { key: privateKey, cert: certificate };
 var httpApp = express();
 var app = express();
 
-httpApp.get('*', (req, res) => {
-  res.redirect('https://' + req.headers.host + req.url);
-  //res.sendFile(makeAbsolute("index.htm"));
-});
+AUTHENTICATING_CERTS = false;
+
+if (!AUTHENTICATING_CERTS) {
+  httpApp.get('*', (req, res) => {
+    res.redirect('https://' + req.headers.host + req.url);
+  });
+}
+
+if (AUTHENTICATING_CERTS) {
+httpApp.get('/.well-known/*', (req, res) => {
+  console.log(req.url);
+  absolutePath = makeAbsolute(req.url);
+  if (fs.existsSync(absolutePath))
+  {
+    res.sendFile(absolutePath);
+  } else {
+    res.sendStatus(404)
+  }
+})
+}
 
 app.get('/', (req, res) => {
   res.sendFile(makeAbsolute('index.htm'));
@@ -26,6 +42,7 @@ app.get('/favicon.png', (req, res) => {
 })
 
 app.get('/public/*', (req, res) => {
+  console.log(req.url);
   absolutePath = makeAbsolute(req.url);
   if (fs.existsSync(absolutePath))
   {
@@ -41,7 +58,7 @@ app.get(('/message/*'), (req, res) => {
   console.log(unescape(message))
 })
 
-portHttp  = 4664;
+portHttp  = 8080;
 portHttps = 8443;
 var httpServer  = http.createServer(httpApp);
 var httpsServer = https.createServer(credentials, app);

@@ -1,8 +1,6 @@
 if (!classDefined(Vector2d)) throw("Vector2d class not defined!");
 if (!classDefined(Complex))  throw("Complex class not defined!");
 
-var globals = {};
-
 // function SamplePoint(bezierSet, p) {
 //   var N = bezierSet.length / 3; // Number of curves
 //   var idx = Math.floor(p * N); // Figure out which curve we are on
@@ -87,7 +85,9 @@ function createCoeffs(data, numSamples) {
   return dft(ac);
 }
 globals.numSamples = 15;
-globals.coeff = createCoeffs(graphicsDefs.eighthNote, globals.numSamples);
+globals.vectorName = "eighthNote";
+globals.selectedVector = globals.graphicsDefs[globals.vectorName];
+globals.coeff = createCoeffs(globals.selectedVector, globals.numSamples);
 
 function iterate() {
   var v1 = approx(globals.coeff, globals.tick, globals.accuracy);
@@ -98,7 +98,7 @@ function iterate() {
 
 function drawOutline() {
   globals.context.strokeStyle = "#aaa";
-  DrawGraphic(graphicsDefs.eighthNote);
+  DrawGraphic(globals.selectedVector);
   globals.context.strokeStyle = "#000";
 }
 

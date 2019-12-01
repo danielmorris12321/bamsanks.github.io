@@ -41,8 +41,8 @@ class Vector2d {
 class Bezier {
   constructor(v1, v2, v3, v4) {
     if (v1 instanceof Array && !isDefined(v2) && !isDefined(v3) && !isDefined(v4)) {
-      if (v.length != 4) throw("Four vectors are required to create a Bezier curve!");
-      this._constructor_vectors(v[0], v[1], v[2], v[3]);
+      if (v1.length != 4) throw("Four vectors are required to create a Bezier curve!");
+      this._constructor_vectors(v1[0], v1[1], v1[2], v1[3]);
     } else {
       this._constructor_vectors(v1, v2, v3, v4);
     }

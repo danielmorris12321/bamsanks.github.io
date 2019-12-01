@@ -1,9 +1,11 @@
+var globals = {};
+
 function classDefined(c) {
   return typeof Vector2d === "function" && typeof Vector2d.constructor === "function"
 }
 
 function isDefined(x) {
-  return (typeof x !== "undefined");
+  return (typeof x !== "undefined" && x !== null);
 }
 
 function ifUndefined(x, def) {

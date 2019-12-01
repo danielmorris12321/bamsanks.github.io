@@ -28,9 +28,10 @@ function updateInputRanges() {
 }
 
 function play_click() {
-  if (globals.numSamples != globals.lastNumSamples) {
-    globals.coeff = createCoeffs(graphicsDefs.eighthNote, globals.numSamples);
+  if (globals.needsDft) {
+    globals.coeff = createCoeffs(globals.selectedVector, globals.numSamples);
     globals.lastNumSamples = globals.numSamples;
+    globals.needsDft = false;
   }
   globals.accuracy = parseInt(document.getElementById("accuracy").value);
   globals.tick = 0;
@@ -46,7 +47,16 @@ function play_click() {
   setTimeout(loop, 100);
 }
 
+function vector_change() {
+  globals.needsDft = true;
+  globals.vectorName = document.getElementById("vector").value;
+  globals.selectedVector = globals.graphicsDefs[globals.vectorName];
+  clearCanvas();
+  if (globals.showOutline) drawOutline();
+}
+
 function samples_change() {
+  globals.needsDft = true;
   globals.numSamples = makeOdd(parseInt(document.getElementById("samples").value));
   if (globals.numSamples > 2) updateInputRanges();
 }
@@ -62,6 +72,7 @@ function outline_change() {
 }
 
 function attachListeners() {
+  document.getElementById("vector").onchange = vector_change;
   document.getElementById("clear").onchange = clear_change;
   document.getElementById("outline").onchange = outline_change;
   document.getElementById("play").onclick = play_click;
